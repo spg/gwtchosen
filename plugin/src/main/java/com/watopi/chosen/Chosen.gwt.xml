@@ -11,5 +11,7 @@
         <when-type-assignable class="com.watopi.chosen.client.ChosenImpl" />
         <when-property-is name="user.agent" value="ie6" />
     </replace-with>
+
+    <set-configuration-property name="CssResource.style" value="pretty"/>
 </module>
     

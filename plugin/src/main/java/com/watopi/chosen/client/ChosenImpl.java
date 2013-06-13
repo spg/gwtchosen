@@ -18,6 +18,9 @@
  */
 package com.watopi.chosen.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.RepeatingCommand;
@@ -49,6 +52,7 @@ import com.watopi.chosen.client.SelectParser.SelectItem;
 import com.watopi.chosen.client.event.ChosenChangeEvent;
 import com.watopi.chosen.client.event.ChosenEvent;
 import com.watopi.chosen.client.event.HidingDropDownEvent;
+import com.watopi.chosen.client.event.KeyUpEvent;
 import com.watopi.chosen.client.event.MaxSelectedEvent;
 import com.watopi.chosen.client.event.ReadyEvent;
 import com.watopi.chosen.client.event.ShowingDropDownEvent;
@@ -67,7 +71,7 @@ public class ChosenImpl {
         @Template("<li class=\"{1}\" id=\"{0}\"><span>{2}</span><a href=\"javascript:void(0)\" class=\"{3}\" " +
                 "rel=\"{4}\"></a></li>")
         SafeHtml choice(String id, String searchChoiceClass, String content,
-                String searchChoiceCloseClass, String rel);
+                        String searchChoiceCloseClass, String rel);
 
         @Template("<div id=\"{0}\" class=\"{1}\"></div>")
         SafeHtml container(String id, String cssClasses);
@@ -76,14 +80,15 @@ public class ChosenImpl {
                 "autocomplete=\"off\" style=\"width:25px;\"/></li></ul><div class=\"{4}\" style=\"{6}\"><ul " +
                 "class=\"{5}\"></ul></div>")
         SafeHtml contentMultiple(String chznChoicesClass, String chznSearchFieldClass,
-                String defaultText, String defaultClass, String chznDropClass, String chznResultClass,
-                SafeStyles horizontalOffset);
+                                 String defaultText, String defaultClass, String chznDropClass, String chznResultClass,
+                                 SafeStyles horizontalOffset);
 
         @Template("<a href=\"javascript:void(0)\" class=\"{0} {1}\"><span>{2}</span><div><b></b></div></a><div " +
                 "class=\"{3}\" style=\"{6}\"><div class=\"{4}\"><input type=\"text\" autocomplete=\"off\" /></div><ul" +
                 " class=\"{5}\"></ul></div>")
         SafeHtml contentSingle(String chznSingleClass, String chznDefaultClass, String defaultText,
-                String dropClass, String chznSearchClass, String chznResultClass, SafeStyles horizontalOffset);
+                               String dropClass, String chznSearchClass, String chznResultClass,
+                               SafeStyles horizontalOffset);
 
         @Template("<li id=\"{0}\" class=\"{1}\">{2}</li>")
         SafeHtml group(String id, String groupResultClass, String content);
@@ -103,7 +108,6 @@ public class ChosenImpl {
     private static final String TABINDEX_PROPERTY = "tabindex";
     private static boolean cssInjected = false;
     private static int idCounter = 0;
-
     private GQuery $selectElement;
     private Function activateAction;
     private boolean activeField = false;
@@ -153,6 +157,10 @@ public class ChosenImpl {
 
     public SelectElement getSelectElement() {
         return selectElement;
+    }
+
+    public String getSearchTerm() {
+        return searchField.val();
     }
 
     /**
@@ -974,12 +982,13 @@ public class ChosenImpl {
     }
 
     private void resultsSearch() {
+        fireEvent(new KeyUpEvent(this));
+
         if (resultsShowing) {
             winnowResults();
         } else {
             resultsShow();
         }
-
     }
 
     private boolean resultsShow() {
@@ -1260,7 +1269,8 @@ public class ChosenImpl {
             searchContainer = container.find("div." + css.chznSearch()).first();
             selectedItem = container.find("." + css.chznSingle()).first();
             int searchFieldWidth =
-                    ddWidth - getSideBorderPadding(searchContainer, isHidden) - getSideBorderPadding(searchField, isHidden);
+                    ddWidth - getSideBorderPadding(searchContainer, isHidden) - getSideBorderPadding(searchField,
+                            isHidden);
             searchField.css("width", searchFieldWidth + "px");
         }
 
@@ -1276,10 +1286,10 @@ public class ChosenImpl {
         if (isMultiple && choices < 1 && !activeField) {
             searchField.val(defaultText);
             searchField.addClass(css.defaultClass());
-        } else {
-            searchField.val("");
-            searchField.removeClass(css.defaultClass());
-        }
+        }// else {
+//            searchField.val("");
+//            searchField.removeClass(css.defaultClass());
+//        }
     }
 
     private void singleDeselectControlBuild() {
@@ -1418,4 +1428,35 @@ public class ChosenImpl {
 
     }
 
+    public void clearOptions() {
+        Console.log("Clearing search results");
+
+        for (int i = 0; i < selectElement.getOptions().getLength(); i++) {
+            OptionElement optionElement = (OptionElement) selectElement.getChild(i);
+            Console.log("optionElement value: " + optionElement.getValue() + ", optionElement text: " + optionElement
+                    .getText());
+        }
+
+        List<String> choices = getChoices();
+
+
+        $(selectElement).children().remove();
+//        selectElement.clear();
+//        selectItems =
+
+//        GQuery children = $("." + css.chznResults()).children();
+//        Console.log("children count: " + children.size());
+//        $(children).remove();
+
+//        searchResults.children().remove();
+//        winnowResultsClear();
+    }
+
+    private List<String> getChoices(){
+        List<String> choices = new ArrayList<String>();
+
+        $("li" , "." + css.chznChoices())
+
+        return choices;
+    }
 }

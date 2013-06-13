@@ -78,7 +78,7 @@ public class Chosen extends GQuery {
     }
 
     public Chosen chosen(EventBus eventBus) {
-        return chosen(null, eventBus);
+        return chosen(new ChosenOptions(), eventBus);
 
     }
 
@@ -119,4 +119,15 @@ public class Chosen extends GQuery {
         return this;
     }
 
+    public Chosen clearOptions() {
+        for (Element e : elements()) {
+            ChosenImpl impl = $(e).data(CHOSEN_DATA_KEY, ChosenImpl.class);
+
+            if (impl != null) {
+                impl.clearOptions();
+            }
+        }
+
+        return this;
+    }
 }
